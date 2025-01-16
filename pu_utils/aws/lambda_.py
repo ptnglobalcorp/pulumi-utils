@@ -434,6 +434,7 @@ class ContainerLambda(ComponentResource):
     ) -> Function:
         return Function(
             name,
+            publish=True,
             name=function_name,
             role=role_arn,
             image_uri=image_uri,
