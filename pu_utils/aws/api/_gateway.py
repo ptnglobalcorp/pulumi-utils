@@ -25,17 +25,17 @@ class RestEndpoint(ComponentResource):
     """Create a lambda-backed REST API endpoint"""
 
     def __init__(
-            self,
-            name: str,
-            path: str,
-            lambda_version: str,
-            method: Literal["GET", "POST", "PUT", "PATCH", "DELETE"],
-            api_id: Input[str],
-            gateway_execution_arn: Input[str],
-            resource_id: Input[str],
-            function: Function,
-            authorizer_id: Input[str] | None = None,
-            opts: ResourceOptions | None = None,
+        self,
+        name: str,
+        path: str,
+        lambda_version: str,
+        method: Literal["GET", "POST", "PUT", "PATCH", "DELETE"],
+        api_id: Input[str],
+        gateway_execution_arn: Input[str],
+        resource_id: Input[str],
+        function: Function,
+        authorizer_id: Input[str] | None = None,
+        opts: ResourceOptions | None = None,
     ) -> None:
         super().__init__("pu-utils:index:RestEndpoint", name, None, opts)
         self.function = function
@@ -93,12 +93,12 @@ class RestGateway(ComponentResource):
         return self._api.execution_arn
 
     def __init__(
-            self,
-            name: str,
-            namer: Namer,
-            authorizer_func: Function | None = None,
-            gateway_id: Input[str] | None = None,
-            opts: ResourceOptions | None = None,
+        self,
+        name: str,
+        namer: Namer,
+        authorizer_func: Function | None = None,
+        gateway_id: Input[str] | None = None,
+        opts: ResourceOptions | None = None,
     ) -> None:
         """
         Create a REST Gateway (API Gateway v1)
@@ -122,14 +122,14 @@ class RestGateway(ComponentResource):
         # May also add catch-all route and return mock 404
 
     def add_endpoint(
-            self,
-            name: str,
-            method: Literal["GET", "POST", "PUT", "PATCH", "DELETE"],
-            path: str,
-            function: Function,
-            lambda_version: str,
-            *,
-            authorized: bool = True,
+        self,
+        name: str,
+        method: Literal["GET", "POST", "PUT", "PATCH", "DELETE"],
+        path: str,
+        function: Function,
+        lambda_version: str,
+        *,
+        authorized: bool = True,
     ) -> None:
         self._endpoints.append(
             RestEndpoint(
