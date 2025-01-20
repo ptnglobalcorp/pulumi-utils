@@ -28,6 +28,7 @@ class RestEndpoint(ComponentResource):
         self,
         name: str,
         path: str,
+        lambda_version: str,
         method: Literal["GET", "POST", "PUT", "PATCH", "DELETE"],
         api_id: Input[str],
         gateway_execution_arn: Input[str],
@@ -49,6 +50,19 @@ class RestEndpoint(ComponentResource):
             resource_id=resource_id,
             opts=ResourceOptions(parent=self),
         )
+
+        # Conditionally set the ARN
+        lambda_arn = (
+            self.function.invoke_arn
+            if lambda_version == "0"
+            else self.function.invoke_arn.apply(
+                lambda arn: arn.replace("/invocations", f":{lambda_version}/invocations")
+            )
+        )
+
+        # Debugging: Print the resolved ARN
+        lambda_arn.apply(lambda resolved_arn: print(f"Resolved Lambda ARN: {resolved_arn}"))
+
         self.integration = Integration(
             name,
             # Must read from method to enforce creation order, reading from args may
@@ -57,12 +71,13 @@ class RestEndpoint(ComponentResource):
             http_method=self.method.http_method,
             integration_http_method="POST",
             type="AWS_PROXY",
-            uri=self.function.invoke_arn,
+            uri=lambda_arn,  # Use the conditionally resolved ARN
             rest_api=api_id,
             resource_id=resource_id,
             opts=ResourceOptions(parent=self),
         )
         self.register_outputs({})
+
 
     def resources(self) -> list[Resource]:
         return [self.integration, self.method]
@@ -112,6 +127,7 @@ class RestGateway(ComponentResource):
         method: Literal["GET", "POST", "PUT", "PATCH", "DELETE"],
         path: str,
         function: Function,
+        lambda_version: str,
         *,
         authorized: bool = True,
     ) -> None:
@@ -120,6 +136,7 @@ class RestGateway(ComponentResource):
                 name,
                 path=path,
                 resource_id=self._route_resource_id(path),
+                lambda_version=lambda_version,
                 method=method,
                 api_id=self._api.id,
                 gateway_execution_arn=self._api.execution_arn,
