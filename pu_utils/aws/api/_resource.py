@@ -20,6 +20,8 @@ def _cors_integration_headers() -> dict[str, str]:
             "X-Amz-Security-Token",
             "X-Amz-User-Agent",
             "X-Amzn-Trace-Id",
+            "Content-Encoding",
+            "Accept-Encoding",
         ]
     )
     return {
